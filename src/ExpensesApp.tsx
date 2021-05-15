@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import './App.css';
 import { DateRangePicker } from './components/DateRangePicker';
@@ -8,6 +8,7 @@ import { RootState } from './redux/store';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import { ExpenseItem } from './components/ExpenseItem';
+import { AddExpenseDialog } from './components/AddExpenseDialog';
 
 const useStyles = makeStyles((theme) => ({
     buttonContainer: {
@@ -34,6 +35,14 @@ function ExpensesApp(): JSX.Element {
     const toDate = useSelector((state: RootState) => state.expenses.toDate);
     const error = useSelector((state: RootState) => state.expenses.error);
     const classes = useStyles();
+
+    const [openAddExpense, setOpenAddExpense] = useState(false);
+    const handleOpenAddExpense = () => {
+        setOpenAddExpense(true);
+    };
+    const handleCloseAddExpense = () => {
+        setOpenAddExpense(false);
+    };
 
     useEffect(() => {
         if (expensesStatus === Status.IDLE) {
@@ -66,9 +75,10 @@ function ExpensesApp(): JSX.Element {
                 <Button variant="contained" color="primary" className={classes.button}>
                     Show All
                 </Button>
-                <Button variant="contained" color="primary" className={classes.button}>
+                <Button variant="contained" color="primary" className={classes.button} onClick={handleOpenAddExpense}>
                     Add
                 </Button>
+                <AddExpenseDialog open={openAddExpense} handleClose={handleCloseAddExpense} />
             </div>
             <div className={classes.content}>{content}</div>
         </div>

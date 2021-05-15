@@ -1,7 +1,7 @@
 export interface Expense {
     id: number;
     amount: number;
-    currency: 'EUR' | 'CHF';
+    currency: string;
     timestamp: string;
     category: string;
     description: string;
@@ -10,3 +10,14 @@ export interface Expense {
         name: string;
     };
 }
+
+export interface NewExpense {
+    amount: number;
+    currency: string;
+    timestamp: string;
+    category: string;
+    description: string;
+    accountId: number;
+}
+
+export type Currency = 'EUR' | 'CHF';

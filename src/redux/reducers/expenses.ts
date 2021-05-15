@@ -1,5 +1,5 @@
 import { AnyAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { Expense } from '../../types';
+import { Expense, NewExpense } from '../../types';
 import { client } from '../../utilities/client';
 import { RootState } from '../store';
 
@@ -27,10 +27,14 @@ export const fetchExpenses = createAsyncThunk('expenses/fetchExpenses', async ()
     return response;
 });
 
-export const addExpense = createAsyncThunk('expenses/addExpense', async (expense) => {
-    const response = await client.post('/api/expenses', { expense });
-    return response.expense;
-});
+export const addExpense = createAsyncThunk(
+    'expenses/addExpense',
+    async (payload: { expense: NewExpense }): Promise<Expense> => {
+        console.log(payload);
+        const response = await client.post('/api/expenses', payload.expense);
+        return response;
+    }
+);
 
 const expensesSlice = createSlice({
     name: 'expenses',
@@ -46,11 +50,9 @@ const expensesSlice = createSlice({
             }
         },
         updateFromDate(state, action: { type: string; payload: string }) {
-            console.log('Changing from date ', action.payload);
             state.fromDate = action.payload;
         },
         updateToDate(state, action: { type: string; payload: string }) {
-            console.log('Changing to date ', action.payload);
             state.toDate = action.payload;
         },
     },
@@ -67,7 +69,7 @@ const expensesSlice = createSlice({
             state.error = action.error.message;
         });
         builder.addCase('expenses/addExpense/fulfilled', (state, action: AnyAction) => {
-            state.expenses.push(action.payload);
+            state.expenses.unshift(action.payload);
         });
     },
 });
@@ -96,7 +98,6 @@ export const selectAmountInEuros = (state: RootState): number => {
             return acc + expense.amount;
         }
     }, 0);
-    console.log('Called once', total);
     return total;
 };
 
